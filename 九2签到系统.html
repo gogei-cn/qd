@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>课堂签到系统</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        td {
+            border: 1px solid #ddd;
+            padding: 10px 5px;
+            text-align: center;
+            background-color: white;
+            transition: all 0.3s;
+            height: 50px;
+            font-size: 0.9rem;
+            word-break: break-all;
+            overflow: hidden;
+        }
+        .student-name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .signed {
+            color: #4CAF50;
+            font-weight: bold;
+            background-color: #e8f5e9;
+        }
+        .stats {
+            background-color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .stats p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            flex: 1 0 30%;
+            text-align: center;
+        }
+        .stats span {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        @media (max-width: 400px) {
+            td {
+                padding: 5px 2px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>课堂签到系统</h1>
+        
+        <div class="stats">
+            <p>总人数: <span id="total-count">0</span></p>
+            <p>已签到: <span id="signed-count">0</span></p>
+            <p>未签到: <span id="unsigned-count">0</span></p>
+        </div>
+        
+        <table id="sign-table">
+            <!-- 7行6列表格将通过JavaScript动态生成 -->
+        </table>
+    </div>
+
+    <script>
+        // 学生名单数据 (42个学生，7行×6列)
+        const students = [
+            "1顾梓逍", "2姚子骞", "3许嘉奇", "4陈弘斌", "5朱星辰", "6张竣涵", 
+            "7解博文", "8顾诞辰", "9范康宸", "10丁陆静怡", "11张思琪", "12张伊晨", 
+            "13顾雨嘉", "14杨恬恬", "15王茗怡", "16周祎诺", "17张馨尹", "18唐若灵", 
+            "19金可馨", "20奚筱诺", "21华语馨", "22顾佳琪", "23龙泽文", "24张晋源",
+            "25岳宏宇", "26彭政豪", "27戴小乐", "28李广金", "29张俊翔", "30张元祯",
+            "31陈芷萱", "32吴玥颖","33李慧慧", "34王欣冉", "35杨欣怡", "36王睿", 
+            "37郑希", "38祝晗瑜", "39朱欣雨", "40张奕涵", "41宋予晨", "42周雅菲"
+        ].slice(0, 42); // 确保只有42个学生
+
+        // 获取DOM元素
+        const signTable = document.getElementById('sign-table');
+        const totalCount = document.getElementById('total-count');
+        const signedCount = document.getElementById('signed-count');
+        const unsignedCount = document.getElementById('unsigned-count');
+
+        // 初始化统计数据
+        totalCount.textContent = students.length;
+        signedCount.textContent = 0;
+        unsignedCount.textContent = students.length;
+
+        // 生成7行6列的表格
+        let studentIndex = 0;
+        for (let i = 0; i < 7; i++) {
+            const row = document.createElement('tr');
+            
+            for (let j = 0; j < 6; j++) {
+                const cell = document.createElement('td');
+                const studentName = document.createElement('div');
+                studentName.className = 'student-name';
+                
+                if (studentIndex < students.length) {
+                    studentName.textContent = students[studentIndex];
+                    studentIndex++;
+                } else {
+                    studentName.textContent = "-"; // 空白单元格
+                    cell.style.backgroundColor = "#f9f9f9";
+                }
+                
+                // 点击事件 - 签到/取消签到
+                cell.addEventListener('click', function() {
+                    if (studentName.textContent !== "-") {
+                        cell.classList.toggle('signed');
+                        updateStats();
+                        
+                        // 添加点击动画效果
+                        cell.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            cell.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+                
+                cell.appendChild(studentName);
+                row.appendChild(cell);
+            }
+            
+            signTable.appendChild(row);
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            const signed = document.querySelectorAll('.signed').length;
+            signedCount.textContent = signed;
+            unsignedCount.textContent = students.length - signed;
+        }
+
+        // 添加触摸反馈效果
+        document.querySelectorAll('td').forEach(cell => {
+            cell.addEventListener('touchstart', function() {
+                if (this.querySelector('.student-name').textContent !== "-") {
+                    this.style.opacity = '0.7';
+                }
+            });
+            
+            cell.addEventListener('touchend', function() {
+                this.style.opacity = '1';
+            });
+        });
+    </script>
+</body>
+</html>
