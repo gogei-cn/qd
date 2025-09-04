@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="UTF-8" />
+        <title>排座位系统</title>
+        <link rel="stylesheet" href="zuowei.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    </head>
+    <body>
+        <!-- 添加导出按钮 -->
+        <button id="exportCsvBtn" style="margin-right: 10px">导出座位表</button>
+        <button id="exportImgBtn">导出为图片</button>
+        <div class="container">
+            <div class="table-container">
+                <div style="display: flex; margin-bottom: 5px;">
+                    <div style="width: 25px;"></div>
+                    <div style="width: 120px; text-align: center; font-weight: bold;">金</div>
+                    <div style="width: 120px; text-align: center; font-weight: bold;">木</div>
+                    <div style="width: 120px; text-align: center; font-weight: bold;">水</div>
+                    <div style="width: 120px; text-align: center; font-weight: bold;">火</div>
+                    <div style="width: 120px; text-align: center; font-weight: bold;">土</div>
+                </div>
+                <div style="display: flex;">
+                    <div style="display: flex; flex-direction: column; margin-right: 5px;">
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">1</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">2</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">3</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">4</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">5</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">6</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">7</div>
+                        <div style="height: 60px; width: 20px; text-align: center; font-weight: bold; line-height: 60px;">8</div>
+                    </div>
+                    <table id="seating">
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="student-list" id="students"></div>
+        </div>
+        <script>
+            const students = [
+                "1刘洋扬",
+                "2吴翊阁",
+                "3王上文",
+                "4李振源",
+                "5史东哲",
+                "6宁溢鑫",
+                "7蒋佳倪",
+                "8梁雨晴",
+                "9刘紫萱",
+                "10王一凡",
+                "11刘雨涵",
+                "12张凌露",
+                "13沈昕懿",
+                "14刘心禾",
+                "15邱羽彤",
+                "16董曜绮",
+                "17常启辉",
+                "18刘劲星",
+                "19随子墨",
+                "20庹懿文",
+                "21严涛",
+                "22张显",
+                "23赵博宇",
+                "24李京诚",
+                "25徐俊弘",
+                "26韩正",
+                "27张智明",
+                "28陈熙瑶",
+                "29窦欣彤",
+                "30宋清华",
+                "31王佳琪",
+                "32张鑫悦",
+                "33李毅萌",
+                "34孙梓萱",
+                "35李思雅",
+                "36李昕洁",
+            ];
+            const studentList = document.getElementById("students");
+            const seatingTable = document.getElementById("seating");
+            const tableBody = seatingTable.querySelector("tbody");
+
+            // 创建表格 8行 × 5列
+            for (let i = 0; i < 8; i++) {
+                const tr = document.createElement("tr");
+                for (let j = 0; j < 5; j++) {
+                    const td = document.createElement("td");
+                    td.addEventListener("dragover", (e) => e.preventDefault());
+                    td.addEventListener("drop", function (e) {
+                        e.preventDefault();
+                        const id = e.dataTransfer.getData("text/plain");
+                        const studentEl = document.getElementById(id);
+                        if (studentEl && this.children.length === 0) {
+                            this.appendChild(studentEl);
+                        }
+                    });
+                    tr.appendChild(td);
+                }
+                tableBody.appendChild(tr);
+            }
+
+            // 创建可拖动的学生名单表格，每行5个
+            const listTable = document.createElement("table");
+            const listTbody = document.createElement("tbody");
+            const cols = 5;
+            const rows = Math.ceil(students.length / cols);
+            for (let i = 0; i < rows; i++) {
+                const tr = document.createElement("tr");
+                for (let j = 0; j < cols; j++) {
+                    const td = document.createElement("td");
+                    td.addEventListener("dragover", (e) => e.preventDefault());
+                    td.addEventListener("drop", function (e) {
+                        e.preventDefault();
+                        const id = e.dataTransfer.getData("text/plain");
+                        const studentEl = document.getElementById(id);
+                        // 仅当列表单元格为空时放入学生，保证每格仅有一个
+                        if (studentEl && this.children.length === 0) {
+                            this.appendChild(studentEl);
+                        }
+                    });
+                    const idx = i * cols + j;
+                    if (students[idx]) {
+                        const div = document.createElement("div");
+                        div.textContent = students[idx];
+                        div.id = "student-" + idx;
+                        div.className = "student";
+                        div.draggable = true;
+                        div.addEventListener("dragstart", function (e) {
+                            e.dataTransfer.setData("text/plain", this.id);
+                            setTimeout(() => this.classList.add("dragging"), 0);
+                        });
+                        div.addEventListener("dragend", function () {
+                            this.classList.remove("dragging");
+                        });
+                        td.appendChild(div);
+                    }
+                    tr.appendChild(td);
+                }
+                listTbody.appendChild(tr);
+            }
+            listTable.appendChild(listTbody);
+            studentList.appendChild(listTable);
+
+            // 导出为CSV
+            document
+                .getElementById("exportCsvBtn")
+                .addEventListener("click", () => {
+                    let csvContent = '';
+                    // 添加列标签
+                    const labels = ['', '金', '木', '水', '火', '土'];
+                    csvContent += labels.join(',') + '\n';
+                    // 遍历行
+                    document.querySelectorAll('#seating tbody tr').forEach((tr, idx) => {
+                        const rowNum = idx + 1;
+                        const rowArr = [rowNum];
+                        tr.querySelectorAll('td').forEach(td => {
+                            const div = td.querySelector('.student');
+                            rowArr.push(div ? div.textContent.trim() : '');
+                        });
+                        csvContent += rowArr.join(',') + '\n';
+                    });
+                    // 触发下载
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = '座位表.csv';
+                    link.click();
+                });
+
+            // 导出为图片
+            document
+                .getElementById("exportImgBtn")
+                .addEventListener("click", () => {
+                    const seatingEl = document.querySelector('.table-container');
+                    html2canvas(seatingEl).then(canvas => {
+                        canvas.toBlob(blob => {
+                            const link = document.createElement('a');
+                            link.href = URL.createObjectURL(blob);
+                            link.download = '座位表.png';
+                            link.click();
+                        });
+                    });
+                });
+        </script>
+    </body>
+</html>

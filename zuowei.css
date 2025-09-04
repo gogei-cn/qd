@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+.container {
+    display: flex;
+    flex-wrap: nowrap; /* 默认不换行 */
+    gap: 40px; /* 子元素之间间距 */
+}
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+#seating {
+    width: 100% !important; /* 让表格适应容器宽度 */
+    table-layout: fixed !important;
+}
+.table-container {
+    width: 600px !important;
+    box-sizing: border-box;
+    overflow: hidden; /* 防止超出 */
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+/* 移除伪元素标题，改用HTML元素 */
+#seating td, #seating th {
+    border: 1px solid #ccc;
+    width: 16.66% !important; /* 6列，每列占容器的1/6 */
+    height: 60px !important; /* 增加高度 */
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box !important;
+}
+.student-list td {
+    border: 1px solid #ccc;
+    width: 100% !important; /* 单列占满整个宽度 */
+    height: 60px !important; /* 增加高度 */
+    padding: 5px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box !important;
+}
+.student-list {
+    width: 600px !important; /* 与左边一样的宽度 */
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+.student-list table {
+    border-collapse: collapse;
+    width: 100% !important; /* 让表格适应容器宽度 */
+    table-layout: fixed !important;
+}
+/* 只对左边座位表内的学生元素特殊处理 */
+#seating td .student {
+    margin: 0 !important;
+    padding: 2px !important;
+    width: calc(100% - 4px) !important;
+    height: calc(100% - 4px) !important;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    cursor: grab;
+    font-size: 12px !important; /* 调小字体大小 */
+    font-family: Arial, sans-serif !important; /* 固定字体 */
+    line-height: 1 !important; /* 固定行高 */
+}
+/* 右边学生列表保持原样 */
+.student-list td .student {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px !important; /* 调小字体大小 */
+    font-family: Arial, sans-serif !important; /* 固定字体 */
+    line-height: 1 !important; /* 固定行高 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+}
+.student {
+    padding: 5px;
+    margin: 5px 0;
+    background: #f0f0f0;
+    cursor: grab;
+    font-size: 12px !important; /* 调小字体大小 */
+    font-family: Arial, sans-serif !important; /* 固定字体 */
+    line-height: 1 !important; /* 固定行高 */
+    font-weight: normal !important; /* 固定字体粗细 */
+}
+.student.dragging {
+    opacity: 0.5;
+}
